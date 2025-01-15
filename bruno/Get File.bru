@@ -1,0 +1,15 @@
+meta {
+  name: Get File
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/~site/:site/Facture.pdf
+  body: none
+  auth: none
+}
+
+params:path {
+  site: test
+}

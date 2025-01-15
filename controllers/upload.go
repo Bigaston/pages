@@ -15,13 +15,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const tempDirectory = "./temp"
-const dataDirectory = "./data"
-
-func Init(app *fiber.App) {
-	app.Post("/~upload/:site", uploadSite)
-}
-
 func uploadSite(c *fiber.Ctx) error {
 	file, err := c.FormFile("file")
 
