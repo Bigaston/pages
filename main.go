@@ -4,14 +4,13 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/pages/controllers"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	controllers.Init(app)
 
 	log.Fatal(app.Listen(":3000"))
 }

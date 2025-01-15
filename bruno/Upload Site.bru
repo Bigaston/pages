@@ -1,0 +1,19 @@
+meta {
+  name: Upload Site
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/~upload/:site
+  body: multipartForm
+  auth: none
+}
+
+params:path {
+  site: test
+}
+
+body:multipart-form {
+  file: @file(C:\Users\Jules\Desktop\Travail\pages\test.zip)
+}
