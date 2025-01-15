@@ -8,7 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,8 +39,27 @@ func uploadSite(c *fiber.Ctx) error {
 
 	siteDirectory := fmt.Sprintf("%s/%s", dataDirectory, c.Params("site", "default"))
 
+	var repository *git.Repository
+
 	if _, err := os.Stat(siteDirectory); err != nil && os.IsNotExist(err) {
 		os.Mkdir(siteDirectory, os.ModePerm)
+		repository, err = git.PlainInit(siteDirectory, false)
+
+		if err != nil {
+			return err
+		}
+	} else {
+		repository, err = git.PlainOpen(siteDirectory)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	worktree, err := repository.Worktree()
+
+	if err != nil {
+		return err
 	}
 
 	err = c.SaveFile(file, fmt.Sprintf("%s/%s", tempDirectory, file.Filename))
@@ -86,9 +108,32 @@ func uploadSite(c *fiber.Ctx) error {
 			return err
 		}
 
+		worktree.Add(f.Name)
+
 		dstFile.Close()
 		fileInArchive.Close()
 	}
 
-	return c.SendString("OK")
+	commit, err := worktree.Commit(fmt.Sprintf("Change %s", time.Now()), &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "Webmaster",
+			Email: "webmaster@domain.com",
+			When:  time.Now(),
+		},
+	})
+
+	if err != nil {
+		if errors.Is(err, git.ErrEmptyCommit) {
+			return c.SendString("OK, no change to commit")
+		}
+		return err
+	}
+
+	obj, err := repository.CommitObject(commit)
+
+	if err != nil {
+		return err
+	}
+
+	return c.SendString(fmt.Sprintf("OK: Commit Hash %s", obj.Hash))
 }
