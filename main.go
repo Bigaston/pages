@@ -17,7 +17,7 @@ func main() {
 
 	controllers.Init(app)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(config.Config.Global.Port))
 }
 
 // 	tlsConfig := tls.Config{

@@ -26,3 +26,4 @@ go.work.sum
 data
 temp
 test.zip
+config.toml

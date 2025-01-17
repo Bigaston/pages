@@ -13,6 +13,7 @@ type ConfigType struct {
 
 type GlobalConfigType struct {
 	BaseHostname string `toml:"base_hostname"`
+	Port         string `toml:"port"`
 }
 
 var Config ConfigType
