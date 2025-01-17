@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/go-git/go-git/v5 v5.13.1
 	github.com/gofiber/fiber/v2 v2.52.6
+	github.com/pelletier/go-toml/v2 v2.2.3 
 )
 
 require (
@@ -25,7 +26,6 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
