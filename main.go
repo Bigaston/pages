@@ -12,7 +12,11 @@ import (
 func main() {
 	config.ReadConfig("./config.toml")
 
-	app := fiber.New()
+	appConfig := fiber.Config{
+		BodyLimit: 2 * 1024 * 1024 * 1024,
+	}
+
+	app := fiber.New(appConfig)
 	app.Use(logger.New())
 
 	controllers.Init(app)
