@@ -1,10 +1,11 @@
-package controllers
+package deployed
 
 import (
 	"archive/zip"
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,24 +14,35 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pages/utils"
 )
 
-func uploadSite(c *fiber.Ctx) error {
+func UploadSite(c *fiber.Ctx) error {
+	if !utils.IsDeployedSite(c) {
+		return c.Next()
+	}
+
 	file, err := c.FormFile("file")
 
 	if err != nil {
 		return err
 	}
 
-	if _, err := os.Stat(tempDirectory); err != nil && os.IsNotExist(err) {
-		os.Mkdir(tempDirectory, os.ModePerm)
+	if _, err := os.Stat(utils.TempDirectory); err != nil && os.IsNotExist(err) {
+		os.Mkdir(utils.TempDirectory, os.ModePerm)
 	}
 
-	if _, err := os.Stat(dataDirectory); err != nil && os.IsNotExist(err) {
-		os.Mkdir(dataDirectory, os.ModePerm)
+	if _, err := os.Stat(utils.DataDirectory); err != nil && os.IsNotExist(err) {
+		os.Mkdir(utils.DataDirectory, os.ModePerm)
 	}
 
-	siteDirectory := fmt.Sprintf("%s/%s", dataDirectory, c.Params("site", "default"))
+	subDomain := c.Subdomains()
+
+	if len(subDomain) == 0 {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+
+	siteDirectory := fmt.Sprintf("%s/%s", utils.DataDirectory, utils.GetDomain(c))
 
 	var repository *git.Repository
 
@@ -55,13 +67,13 @@ func uploadSite(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.SaveFile(file, fmt.Sprintf("%s/%s", tempDirectory, file.Filename))
+	err = c.SaveFile(file, fmt.Sprintf("%s/%s", utils.TempDirectory, file.Filename))
 
 	if err != nil {
 		return err
 	}
 
-	archive, err := zip.OpenReader(fmt.Sprintf("%s/%s", tempDirectory, file.Filename))
+	archive, err := zip.OpenReader(fmt.Sprintf("%s/%s", utils.TempDirectory, file.Filename))
 
 	if err != nil {
 		return err

@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{host}}/~upload/:site
+  url: {{host}}/~upload
   body: multipartForm
   auth: none
 }
 
-params:path {
-  site: kapsulepm
+headers {
+  Host: salut.bigaston.ovh
 }
 
 body:multipart-form {

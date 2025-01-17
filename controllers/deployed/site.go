@@ -1,22 +1,30 @@
-package controllers
+package deployed
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/pages/utils"
 )
 
-func serveSite(c *fiber.Ctx) error {
+func ServeSite(c *fiber.Ctx) error {
+	if !utils.IsDeployedSite(c) {
+		return c.Next()
+	}
+
 	if strings.Contains(c.Path(), ".git") {
 		return c.SendStatus(http.StatusForbidden)
 	}
 
-	route := strings.Replace(c.Path(), "/~site", "", -1)
+	route := c.Path()
 
-	path := filepath.Join(dataDirectory, route)
+	path := filepath.Join(utils.DataDirectory, utils.GetDomain(c), route)
+
+	fmt.Println(path)
 
 	if file, err := os.Stat(path); err == nil && !file.IsDir() {
 		return c.SendFile(path)
