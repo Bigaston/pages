@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/pages/controllers/deployed"
-	"github.com/pages/utils"
+	"github.com/pages/controllers/mainsite"
 )
 
 func Init(app *fiber.App) {
@@ -12,13 +12,6 @@ func Init(app *fiber.App) {
 	app.Use("/", deployed.ServeSite)
 
 	// Main Site
-	app.Get("/", defaultPath)
-}
-
-func defaultPath(c *fiber.Ctx) error {
-	if !utils.IsMainSite(c) {
-		return c.Next()
-	}
-
-	return c.SendString("Tu es à la racine du site la !")
+	app.Use("/public", mainsite.ServePublic)
+	app.Get("/", mainsite.ListSites)
 }

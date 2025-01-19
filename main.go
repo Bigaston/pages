@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/mustache/v2"
 	"github.com/pages/config"
 	"github.com/pages/controllers"
 )
@@ -12,8 +13,11 @@ import (
 func main() {
 	config.ReadConfig("./config.toml")
 
+	viewEngine := mustache.New("./layouts", ".mustache")
+
 	appConfig := fiber.Config{
 		BodyLimit: 2 * 1024 * 1024 * 1024,
+		Views:     viewEngine,
 	}
 
 	app := fiber.New(appConfig)
