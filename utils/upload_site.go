@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -78,6 +79,24 @@ func UploadSite(siteName string, c *fiber.Ctx) (string, error) {
 	}()
 	defer archive.Close()
 
+	// Delete all old files
+	entries, err := os.ReadDir(siteDirectory)
+	if err != nil {
+		return "", err
+	}
+
+	for _, e := range entries {
+		if slices.Contains(ImportantFiles, e.Name()) {
+			continue
+		}
+
+		err := os.RemoveAll(path.Join(siteDirectory, e.Name()))
+
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
 	for _, f := range archive.File {
 		filePath := filepath.Join(siteDirectory, f.Name)
 		fmt.Println("unzipping file ", filePath)
@@ -110,11 +129,13 @@ func UploadSite(siteName string, c *fiber.Ctx) (string, error) {
 			return "", err
 		}
 
-		worktree.Add(f.Name)
-
 		dstFile.Close()
 		fileInArchive.Close()
 	}
+
+	worktree.AddWithOptions(&git.AddOptions{
+		All: true,
+	})
 
 	commit, err := worktree.Commit(fmt.Sprintf("Change %s", time.Now()), &git.CommitOptions{
 		Author: &object.Signature{

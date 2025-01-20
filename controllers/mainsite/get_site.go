@@ -1,12 +1,14 @@
 package mainsite
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path"
 	"time"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pages/utils"
 )
@@ -48,7 +50,17 @@ func GetSite(c *fiber.Ctx) error {
 		return err
 	}
 
-	commit, err := cIter.Next()
+	var lastCommit *object.Commit
+
+	err = cIter.ForEach(func(c *object.Commit) error {
+		fmt.Println(c)
+
+		if lastCommit == nil {
+			lastCommit = c
+		}
+
+		return nil
+	})
 
 	if err != nil {
 		return err
@@ -56,7 +68,7 @@ func GetSite(c *fiber.Ctx) error {
 
 	siteData := siteData{
 		Name:       siteName,
-		LastChange: commit.Author.When,
+		LastChange: lastCommit.Author.When,
 	}
 
 	return c.Render("site_edit", siteData)

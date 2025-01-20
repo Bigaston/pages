@@ -29,3 +29,5 @@ func GetDomain(c *fiber.Ctx) string {
 
 const TempDirectory = "./temp"
 const DataDirectory = "./data"
+
+var ImportantFiles []string = []string{".git"}
