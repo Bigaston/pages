@@ -13,5 +13,5 @@ func Init(app *fiber.App) {
 
 	// Main Site
 	app.Use("/public", mainsite.ServePublic)
-	app.Get("/", mainsite.ListSites)
+	app.Get("/dashboard", mainsite.Dashboard)
 }
