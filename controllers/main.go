@@ -12,6 +12,7 @@ func Init(app *fiber.App) {
 	app.Use("/", deployed.ServeSite)
 
 	// Main Site
+	app.Post("/site/upload", mainsite.UploadSiteWithName)
 	app.Post("/site/:site/upload", mainsite.UploadSite)
 	app.Get("/site/:site", mainsite.SiteEdit)
 	app.Get("/dashboard", mainsite.Dashboard)

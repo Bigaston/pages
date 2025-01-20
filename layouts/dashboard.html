@@ -30,6 +30,22 @@
         </li>
         {{end}}
       </ul>
+
+      <h2>Create a new Website</h2>
+      <form method="post" action="/site/upload" enctype="multipart/form-data">
+        <input name="subdomain" type="text" placeholder="machin" required />
+        <select name="domain" required>
+          <option value=".bigaston.ovh">.bigaston.ovh</option>
+          <option value="">Domaine Personnalisé</option>
+        </select>
+        <br />
+
+        <label for="file">Zip: </label>
+        <input name="file" type="file" accept="application/zip" required />
+        <br />
+
+        <input type="submit" value="Submit" />
+      </form>
     </div>
 
     <script
