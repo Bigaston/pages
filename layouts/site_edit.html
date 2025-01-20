@@ -3,8 +3,6 @@
   <head>
     <title>{{.Name}} - Pages</title>
 
-    <link rel="stylesheet" href="/public/styles.css" />
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#3697dc" />
@@ -33,6 +31,37 @@
 
         <input type="submit" value="Submit" />
       </form>
+
+      <h2>Changements</h2>
+      <div class="accordion" id="accordionCommit">
+        {{range $change := .Changes}}
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#{{$change.Hash}}"
+              aria-expanded="false"
+              aria-controls="{{$change.Hash}}"
+            >
+              {{$change.Hash}}
+            </button>
+          </h2>
+          <div
+            id="{{$change.Hash}}"
+            class="accordion-collapse collapse"
+            data-bs-parent="#accordionCommit"
+          >
+            <div class="accordion-body">
+              {{range $file := $change.FileChanges}}
+              <li>{{$file.Action}} : {{$file.Name}}</li>
+              {{end}}
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
     </div>
 
     <script

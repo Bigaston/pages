@@ -1,7 +1,6 @@
 package mainsite
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -16,6 +15,17 @@ import (
 type siteData struct {
 	Name       string
 	LastChange time.Time
+	Changes    []siteChange
+}
+
+type siteChange struct {
+	Hash        string
+	FileChanges []fileChange
+}
+
+type fileChange struct {
+	Name   string
+	Action string
 }
 
 func GetSite(c *fiber.Ctx) error {
@@ -51,13 +61,60 @@ func GetSite(c *fiber.Ctx) error {
 	}
 
 	var lastCommit *object.Commit
+	var treeNext *object.Tree
+	var commitNext *object.Commit
 
-	err = cIter.ForEach(func(c *object.Commit) error {
-		fmt.Println(c)
+	siteChanges := make([]siteChange, 0, 10)
 
+	err = cIter.ForEach(func(commit *object.Commit) error {
 		if lastCommit == nil {
-			lastCommit = c
+			lastCommit = commit
+			commitNext = commit
+			treeNext, err = commit.Tree()
+
+			if err != nil {
+				return err
+			}
+
+			return nil
 		}
+
+		myTree, err := commit.Tree()
+
+		if err != nil {
+			return err
+		}
+
+		changes, err := treeNext.Diff(myTree)
+
+		if err != nil {
+			return err
+		}
+
+		fileChanges := make([]fileChange, 0, 10)
+
+		for _, change := range changes {
+			action, _ := change.Action()
+
+			name := change.From.Name
+
+			if name == "" {
+				name = change.To.Name
+			}
+
+			fileChanges = append(fileChanges, fileChange{
+				Name:   name,
+				Action: action.String(),
+			})
+		}
+
+		siteChanges = append(siteChanges, siteChange{
+			Hash:        commitNext.Hash.String(),
+			FileChanges: fileChanges,
+		})
+
+		treeNext = myTree
+		commitNext = commit
 
 		return nil
 	})
@@ -69,6 +126,7 @@ func GetSite(c *fiber.Ctx) error {
 	siteData := siteData{
 		Name:       siteName,
 		LastChange: lastCommit.Author.When,
+		Changes:    siteChanges,
 	}
 
 	return c.Render("site_edit", siteData)
