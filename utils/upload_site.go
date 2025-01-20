@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -55,18 +56,26 @@ func UploadSite(siteName string, c *fiber.Ctx) (string, error) {
 		return "", err
 	}
 
-	err = c.SaveFile(file, fmt.Sprintf("%s/%s", TempDirectory, file.Filename))
+	tempFilePath := path.Join(TempDirectory, file.Filename)
+	err = c.SaveFile(file, tempFilePath)
 
 	if err != nil {
 		return "", err
 	}
 
-	archive, err := zip.OpenReader(fmt.Sprintf("%s/%s", TempDirectory, file.Filename))
+	archive, err := zip.OpenReader(tempFilePath)
 
 	if err != nil {
 		return "", err
 	}
 
+	defer func() {
+		err := os.Remove(tempFilePath)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
 	defer archive.Close()
 
 	for _, f := range archive.File {
