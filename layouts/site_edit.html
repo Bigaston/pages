@@ -22,7 +22,11 @@
       <p>Last Update: {{.LastChange}}</p>
 
       <h2>Mettre à jour</h2>
-      <form method="post" action="/site/{{.Name}}/upload">
+      <form
+        method="post"
+        action="/site/{{.Name}}/upload"
+        enctype="multipart/form-data"
+      >
         <label for="file">Zip: </label>
         <input name="file" type="file" accept="application/zip" required />
         <br />

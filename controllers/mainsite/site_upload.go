@@ -6,7 +6,7 @@ import (
 )
 
 func UploadSite(c *fiber.Ctx) error {
-	if !utils.IsDeployedSite(c) {
+	if !utils.IsMainSite(c) {
 		return c.Next()
 	}
 

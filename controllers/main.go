@@ -12,8 +12,8 @@ func Init(app *fiber.App) {
 	app.Use("/", deployed.ServeSite)
 
 	// Main Site
-	app.Use("/public", mainsite.ServePublic)
-	app.Get("/site/:site", mainsite.SiteEdit)
 	app.Post("/site/:site/upload", mainsite.UploadSite)
+	app.Get("/site/:site", mainsite.SiteEdit)
 	app.Get("/dashboard", mainsite.Dashboard)
+	app.Use("/public", mainsite.ServePublic)
 }

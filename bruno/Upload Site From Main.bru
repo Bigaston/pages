@@ -1,0 +1,15 @@
+meta {
+  name: Upload Site From Main
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/site/:site/upload
+  body: multipartForm
+  auth: none
+}
+
+params:path {
+  site: yes.bigaston.ovh
+}
