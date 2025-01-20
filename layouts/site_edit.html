@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
-    <title>Pages</title>
+    <title>{{.Name}} - Pages</title>
 
     <link rel="stylesheet" href="/public/styles.css" />
 
@@ -18,18 +18,17 @@
   </head>
   <body>
     <div class="container">
-      <h1>Pages</h1>
+      <h1>{{.Name}}</h1>
+      <p>Last Update: {{.LastChange}}</p>
 
-      <h2>Websites</h2>
-      <ul>
-        {{range $website := .Websites}}
-        <li>
-          <a href="/site/{{$website.Name}}"
-            >{{$website.Name}} - {{$website.LastChange}}</a
-          >
-        </li>
-        {{end}}
-      </ul>
+      <h2>Mettre à jour</h2>
+      <form method="post" action="/site/{{.Name}}/upload">
+        <label for="file">Zip: </label>
+        <input name="file" type="file" accept="application/zip" required />
+        <br />
+
+        <input type="submit" value="Submit" />
+      </form>
     </div>
 
     <script

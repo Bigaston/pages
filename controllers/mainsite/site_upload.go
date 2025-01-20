@@ -1,8 +1,6 @@
-package deployed
+package mainsite
 
 import (
-	"net/http"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/pages/utils"
 )
@@ -12,13 +10,7 @@ func UploadSite(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	subDomain := c.Subdomains()
-
-	if len(subDomain) == 0 {
-		return c.SendStatus(http.StatusBadRequest)
-	}
-
-	siteName := utils.GetDomain(c)
+	siteName := c.Params("site")
 
 	responseText, err := utils.UploadSite(siteName, c)
 

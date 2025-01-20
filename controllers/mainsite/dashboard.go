@@ -11,7 +11,7 @@ import (
 	"github.com/pages/utils"
 )
 
-type WebsiteData struct {
+type websiteData struct {
 	Name       string
 	LastChange time.Time
 }
@@ -26,7 +26,7 @@ func Dashboard(c *fiber.Ctx) error {
 		return err
 	}
 
-	websites := make([]WebsiteData, 0, 20)
+	websites := make([]websiteData, 0, 20)
 
 	for _, e := range entries {
 		repository, err := git.PlainOpen(path.Join(utils.DataDirectory, e.Name()))
@@ -55,7 +55,7 @@ func Dashboard(c *fiber.Ctx) error {
 			return err
 		}
 
-		websites = append(websites, WebsiteData{
+		websites = append(websites, websiteData{
 			Name:       e.Name(),
 			LastChange: commit.Author.When,
 		})
