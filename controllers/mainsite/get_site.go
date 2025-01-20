@@ -16,7 +16,7 @@ type siteData struct {
 	LastChange time.Time
 }
 
-func SiteEdit(c *fiber.Ctx) error {
+func GetSite(c *fiber.Ctx) error {
 	if !utils.IsMainSite(c) {
 		return c.Next()
 	}
